@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Live Temperature</title>
+    <link rel="stylesheet" href="../style/style.css" />
+  </head>
+  <body>
+    <div id="tempResult" class="tempHeader">
+      <h1>Arduino 1: <span id="temp1">--</span> °C</h1>
+      <h3>
+        Max: <span id="maxTemp1">--</span> °C | Min:
+        <span id="minTemp1">--</span> °C
+      </h3>
+
+      <h1>Arduino 2: <span id="temp2">--</span> °C</h1>
+      <h3>
+        Max: <span id="maxTemp2">--</span> °C | Min:
+        <span id="minTemp2">--</span> °C
+      </h3>
+
+      <div>
+        <button id="startBtn">Start</button>
+        <button id="stopBtn">Stop</button>
+      </div>
+    </div>
+
+    <canvas id="tempChart1" width="800" height="300"></canvas>
+    <canvas id="tempChart2" width="800" height="300"></canvas>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="../script/charts.js"></script>
+  </body>
+</html>

@@ -1,0 +1,12 @@
+.tempHeader {
+    display: flex;
+    justify-content: space-between;
+}
+
+#maxTemp{
+    color: red;
+}
+
+#minTemp{
+    color: blue;
+}
