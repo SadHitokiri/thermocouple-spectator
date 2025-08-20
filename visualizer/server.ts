@@ -22,7 +22,8 @@ const serial1 = new SerialPort({ path: 'COM7', baudRate: 9600 })
 const parser1 = serial1.pipe(new ReadlineParser({ delimiter: '\n' }))
 
 parser1.on('data', (data: string) => {
-  const value = parseFloat(data)
+  const valueFloat = parseFloat(data)
+  const value = valueFloat/1.71 
   if (!isNaN(value)) {
     io.emit('temperature1', value)
     logTemperatureToFile("arduino1", value)
@@ -33,7 +34,8 @@ const serial2 = new SerialPort({ path: 'COM8', baudRate: 9600 })
 const parser2 = serial2.pipe(new ReadlineParser({ delimiter: '\n' }))
 
 parser2.on('data', (data: string) => {
-  const value = parseFloat(data)
+  const valueFloat = parseFloat(data)
+  const value = valueFloat/1.71 
   if (!isNaN(value)) {
     io.emit('temperature2', value)
     logTemperatureToFile("arduino2", value)

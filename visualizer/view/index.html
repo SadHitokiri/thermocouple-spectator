@@ -4,32 +4,137 @@
     <meta charset="UTF-8" />
     <title>Live Temperature</title>
     <link rel="stylesheet" href="../style/style.css" />
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1/dist/chartjs-plugin-zoom.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-decimation@3.1.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/luxon@3.4.4/build/global/luxon.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@1.3.1/dist/chartjs-adapter-luxon.umd.js"></script>
   </head>
   <body>
-    <div id="tempResult" class="tempHeader">
-      <h1>Arduino 1: <span id="temp1">--</span> °C</h1>
-      <h3>
-        Max: <span id="maxTemp1">--</span> °C | Min:
-        <span id="minTemp1">--</span> °C
-      </h3>
+    <div class="container">
+      <!-- Block 1 -->
+      <div class="block" id="block1">
+        <p>Temperatūra 1</p>
+        <div class="inputs">
+          <input
+            type="text"
+            id="productName1"
+            placeholder="Produkta nosaukums"
+          />
+          <input type="text" id="batch1" placeholder="Partijas nr." />
+          <input type="date" id="startDate1" />
+        </div>
+        <div class="info">
+          <p>Temperatūra tagad: <span id="currentTemp1">--</span> °C</p>
+          <p>Procesa sākuma laiks: <span id="startTime1">--:--:--</span></p>
+        </div>
 
-      <h1>Arduino 2: <span id="temp2">--</span> °C</h1>
-      <h3>
-        Max: <span id="maxTemp2">--</span> °C | Min:
-        <span id="minTemp2">--</span> °C
-      </h3>
+        <div class="chart-container">
+          <canvas id="tempChart1"></canvas>
+        </div>
+        <div class="inputs">
+          <select id="peakCount1">
+            <option value="0">Izvēlieties punktus</option>
+            <option value="1">1 punkts</option>
+            <option value="2">2 punkti</option>
+            <option value="3">3 punkti</option>
+          </select>
+        </div>
+        <div id="thresholdInputs1" class="inputs"></div>
+      </div>
 
-      <div>
-        <button id="startBtn">Start</button>
-        <button id="stopBtn">Stop</button>
+      <!-- Block 2 -->
+      <div class="block" id="block2">
+        <p>Temperatūra 2</p>
+        <div class="inputs">
+          <input
+            type="text"
+            id="productName2"
+            placeholder="Produkta nosaukums"
+          />
+          <input type="text" id="batch2" placeholder="Partijas nr." />
+          <input type="date" id="startDate2" />
+        </div>
+        <div class="info">
+          <p>Temperatūra tagad: <span id="currentTemp2">--</span> °C</p>
+          <p>Procesa sākuma laiks: <span id="startTime2">--:--:--</span></p>
+        </div>
+        <div class="chart-container">
+          <canvas id="tempChart2"></canvas>
+        </div>
+        <div class="inputs">
+          <select id="peakCount2">
+            <option value="0">Izvēlieties punktus</option>
+            <option value="1">1 punkts</option>
+            <option value="2">2 punkti</option>
+            <option value="3">3 punkti</option>
+          </select>
+        </div>
+        <div id="thresholdInputs2" class="inputs"></div>
+      </div>
+
+      <!-- Block 3 -->
+      <div class="block" id="block3">
+        <p>Temperatūra 3</p>
+        <div class="inputs">
+          <input
+            type="text"
+            id="productName3"
+            placeholder="Produkta nosaukums"
+          />
+          <input type="text" id="batch3" placeholder="Partijas nr." />
+          <input type="date" id="startDate3" />
+        </div>
+        <div class="info">
+          <p>Temperatūra tagad: <span id="currentTemp3">--</span> °C</p>
+          <p>Procesa sākuma laiks: <span id="startTime3">--:--:--</span></p>
+        </div>
+        <div class="chart-container">
+          <canvas id="tempChart3"></canvas>
+        </div>
+        <div class="inputs">
+          <select id="peakCount3">
+            <option value="0">Izvēlieties punktus</option>
+            <option value="1">1 punkts</option>
+            <option value="2">2 punkti</option>
+            <option value="3">3 punkti</option>
+          </select>
+        </div>
+        <div id="thresholdInputs3" class="inputs"></div>
+      </div>
+
+      <!-- Block 4 -->
+      <div class="block" id="block4">
+        <p>Temperatūra 4</p>
+        <div class="inputs">
+          <input
+            type="text"
+            id="productName4"
+            placeholder="Produkta nosaukums"
+          />
+          <input type="text" id="batch4" placeholder="Partijas nr." />
+          <input type="date" id="startDate4" />
+        </div>
+        <div class="info">
+          <p>Temperatūra tagad: <span id="currentTemp4">--</span> °C</p>
+          <p>Procesa sākuma laiks: <span id="startTime4">--:--:--</span></p>
+        </div>
+        <div class="chart-container">
+          <canvas id="tempChart4"></canvas>
+        </div>
+        <div class="inputs">
+          <select id="peakCount4">
+            <option value="0">Izvēlieties punktus</option>
+            <option value="1">1 punkts</option>
+            <option value="2">2 punkti</option>
+            <option value="3">3 punkti</option>
+          </select>
+        </div>
+        <div id="thresholdInputs4" class="inputs"></div>
       </div>
     </div>
 
-    <canvas id="tempChart1" width="800" height="300"></canvas>
-    <canvas id="tempChart2" width="800" height="300"></canvas>
-
-    <script src="/socket.io/socket.io.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="../script/charts.js"></script>
   </body>
 </html>
