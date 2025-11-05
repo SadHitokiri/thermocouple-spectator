@@ -77,3 +77,77 @@ init().catch((err) => {
   console.error("Initialization error:", err);
   process.exit(1);
 });
+
+// === Simple mock for frontend testing (insert into your server file) ===
+const mockIntervals: Map<string, NodeJS.Timeout> = new Map();
+
+function startMockDevice(fakePath: string, intervalMs = 1000) {
+  // avoid duplicates
+  if (arduinoList.some(d => d.path === fakePath)) {
+    console.log(`Mock already exists: ${fakePath}`);
+    return;
+  }
+
+  const dev = { path: fakePath, friendlyName: `MOCK-${fakePath}`, manufacturer: "mock" };
+  arduinoList.push(dev);
+  io.emit("connectedDevice", arduinoList);
+  console.log(`Mock device added: ${fakePath}`);
+
+  // simulate temperature values
+  let t = 0;
+  const timer = setInterval(() => {
+    const base = 20 + 5 * Math.sin(t / 6);       // smooth oscillation
+    const noise = (Math.random() - 0.5) * 1.5;   // small noise
+    const value = +(base + noise).toFixed(2);    // two decimals
+    io.emit(`temperature:${fakePath}`, value);
+    t++;
+  }, intervalMs);
+
+  mockIntervals.set(fakePath, timer);
+}
+
+function stopMockDevice(fakePath: string) {
+  const timer = mockIntervals.get(fakePath);
+  if (timer) {
+    clearInterval(timer);
+    mockIntervals.delete(fakePath);
+  }
+  arduinoList = arduinoList.filter(d => d.path !== fakePath);
+  io.emit("connectedDevice", arduinoList);
+  console.log(`Mock device stopped: ${fakePath}`);
+}
+
+function stopAllMocks() {
+  for (const [path, timer] of mockIntervals) {
+    clearInterval(timer);
+  }
+  mockIntervals.clear();
+  // remove all mock devices (we assume mock devices have manufacturer "mock")
+  arduinoList = arduinoList.filter(d => d.manufacturer !== "mock");
+  io.emit("connectedDevice", arduinoList);
+  console.log("All mock devices stopped");
+}
+
+// HTTP endpoints to control mock (easy to call from browser or curl)
+app.get("/mock/start", (req, res) => {
+  const count = parseInt(String(req.query.count || "1"), 10);
+  const intervalMs = parseInt(String(req.query.intervalMs || "1000"), 10);
+
+  for (let i = 0; i < count; i++) {
+    const fakePath = `MOCK_COM${Date.now().toString(36).slice(-4)}_${i}`;
+    startMockDevice(fakePath, intervalMs);
+  }
+  res.json({ status: "started", count });
+});
+
+app.get("/mock/stop", (req, res) => {
+  stopAllMocks();
+  res.json({ status: "stopped" });
+});
+
+// auto-start mocks if env var set
+if (process.env.MOCK === "true") {
+  // start 2 mocks by default on server start
+  startMockDevice("MOCK_COM1", 1000);
+  startMockDevice("MOCK_COM2", 1000);
+}

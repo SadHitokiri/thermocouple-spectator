@@ -3,9 +3,7 @@ let receiving = true;
 let processedDeviceList = [];
 const maxAvailableTemp = 30;
 
-let allTemps1 = [];
-
-const contentContainer = document.getElementById("contentContainer");
+const contentContainer = document.getElementById("chartsContainer");
 
 //Chart creation
 function createChart(ctx, label, color) {
@@ -64,6 +62,19 @@ function createChart(ctx, label, color) {
   });
 }
 
+function getRandomColor() {
+  const colorList = [
+    "red",
+    "blue",
+    "green",
+    "orange",
+    "purple",
+    "cyan",
+    "magenta",
+  ];
+  return colorList[Math.floor(Math.random() * colorList.length)];
+}
+
 function updateChart(chart, tempsArray, value, labelId) {
   if (!receiving) return;
 
@@ -82,17 +93,46 @@ function updateChart(chart, tempsArray, value, labelId) {
 }
 
 function setupDevice(device) {
-  if (processedDeviceList.includes(device.path)) {
-    return; // Device already set up
-  }
+  if (processedDeviceList.some(d => d.path === device.path)) return;
 
+  const deviceContainer = document.createElement("div");
+  deviceContainer.id = `container-${device.path}`;
+  deviceContainer.classList.add("device-block");
 
+  const title = document.createElement("h3");
+  title.textContent = device.friendlyName || device.path;
+  const valueLabel = document.createElement("div");
+  valueLabel.id = `temp-${device.path}`;
+  valueLabel.textContent = "— °C";
 
+  const canvas = document.createElement("canvas");
+  deviceContainer.appendChild(title);
+  deviceContainer.appendChild(valueLabel);
+  deviceContainer.appendChild(canvas);
+  contentContainer.appendChild(deviceContainer);
+
+  const ctx = canvas.getContext("2d");
+  const deviceChart = createChart(ctx, device.path, getRandomColor());
+
+  const oDeviceObject = {
+    path: device.path,
+    id: deviceContainer.id,
+    chart: deviceChart,
+    tempsArray: [],
+  };
+  processedDeviceList.push(oDeviceObject);
+
+  const eventName = `temperature:${device.path}`;
+  socket.off(eventName);
+  socket.on(eventName, (value) => {
+    updateChart(deviceChart, oDeviceObject.tempsArray, value, `temp-${device.path}`);
+  });
 }
+
 
 //Get devices for chart creation
 socket.on("connectedDevice", (deviceList) => {
-  deviceList.forEach(device => {
+  deviceList.forEach((device) => {
     setupDevice(device);
   });
 });
@@ -103,5 +143,3 @@ socket.on("connectedDevice", (deviceList) => {
 //   updateChart(chart1, allTemps1, value, "temp1");
 //   checkAndPlayAlert(value, "thresholdInputs1");
 // });
-
-

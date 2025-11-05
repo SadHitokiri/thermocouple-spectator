@@ -1,20 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Live Temperature</title>
+    <link rel="stylesheet" href="../style/style.css" />
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/luxon@3.4.4/build/global/luxon.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@6.0.0/dist/echarts.min.js"></script>
+  </head>
 
-<head>
-  <meta charset="UTF-8" />
-  <title>Live Temperature</title>
-  <link rel="stylesheet" href="../style/style.css" />
-  <script src="/socket.io/socket.io.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/luxon@3.4.4/build/global/luxon.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/echarts@6.0.0/dist/echarts.min.js"></script>
-</head>
+  <body>
+    <div id="chartsContainer"></div>
 
-<body>
+    <button id="addMock">Add Mock Device</button>
+    <script>
+      document.getElementById("addMock").onclick = () => {
+        fetch("/mock/start?count=1");
+      };
+    </script>
 
-  <div id="chartsContainer"></div>
-
-  <script src="../script/charts.js"></script>
-</body>
-
+    <script src="../script/charts.js"></script>
+  </body>
 </html>
