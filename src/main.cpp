@@ -1,9 +1,9 @@
 #include <Arduino.h>
 #include <GyverMAX6675.h>
 
-#define CLK_PIN 13  // Пин SCK
-#define DATA_PIN 10 // Пин SO
-#define CS_PIN 9   // Пин CS
+#define CLK_PIN 13  // SCK
+#define DATA_PIN 10 // SO
+#define CS_PIN 9   // CS
 
 GyverMAX6675<CLK_PIN, DATA_PIN, CS_PIN> sens;
 
