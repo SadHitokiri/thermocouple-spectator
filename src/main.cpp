@@ -21,5 +21,5 @@ void loop()
   else
     Serial.println("Error"); 
 
-  delay(1000);
+  delay(5000);
 }
